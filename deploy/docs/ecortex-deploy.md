@@ -88,7 +88,7 @@ Technician (Browser/Client)
 Create an A record pointing to your server:
 
 ```
-mesh.cortalis.com → <SERVER_PUBLIC_IP>
+ecortex.cortalis.com → <SERVER_PUBLIC_IP>
 ```
 
 ---
@@ -144,7 +144,7 @@ sudo nano .env
 
 ```ini
 # Your domain (must match DNS)
-MESHCENTRAL_HOSTNAME=mesh.cortalis.com
+MESHCENTRAL_HOSTNAME=ecortex.cortalis.com
 
 # Email for Let's Encrypt
 ACME_EMAIL=admin@dfwmsp.com
@@ -168,7 +168,7 @@ docker compose ps
 
 ### Step 6: Verify Deployment
 
-1. Open `https://mesh.cortalis.com` in browser
+1. Open `https://ecortex.cortalis.com` in browser
 2. Accept the certificate (or wait for Let's Encrypt)
 3. You should see the eCortex login page
 
@@ -178,7 +178,7 @@ docker compose ps
 
 ### Create Admin Account
 
-1. Navigate to `https://mesh.cortalis.com`
+1. Navigate to `https://ecortex.cortalis.com`
 2. Click "Create Account" (first user becomes admin)
 3. Set a strong password (min 12 chars, mixed case, numbers, symbols)
 4. **Immediately enable MFA** after login
@@ -340,7 +340,7 @@ Tokens are used for automated agent deployment via NinjaOne.
 
 ```bash
 # Using MeshCtrl
-meshctrl --url wss://mesh.cortalis.com \
+meshctrl --url wss://ecortex.cortalis.com \
          --loginuser admin \
          --loginpass 'password' \
          AddAgentInviteCode \
@@ -447,7 +447,7 @@ docker compose logs traefik
 docker compose logs meshcentral
 
 # Verify DNS resolution
-nslookup mesh.cortalis.com
+nslookup ecortex.cortalis.com
 ```
 
 #### Agents Not Connecting

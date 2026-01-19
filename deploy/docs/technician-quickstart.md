@@ -23,7 +23,7 @@ eCortex is a **BACKUP** tool. Use it only when:
 
 ## 🔑 Logging In
 
-1. Go to: `https://mesh.cortalis.com`
+1. Go to: `https://ecortex.cortalis.com`
 2. Enter your credentials
 3. Complete MFA (required)
 
@@ -130,7 +130,7 @@ eCortex is a **BACKUP** tool. Use it only when:
 ## 📱 Mobile Access
 
 eCortex works in mobile browsers:
-1. Navigate to `https://mesh.cortalis.com`
+1. Navigate to `https://ecortex.cortalis.com`
 2. Log in with credentials + MFA
 3. Search for device
 4. Touch-friendly interface available

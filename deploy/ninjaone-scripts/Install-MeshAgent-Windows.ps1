@@ -14,7 +14,7 @@
     Deployment: NinjaOne Policy/Script
     
 .PARAMETER MeshServerUrl
-    The eCortex server URL (e.g., https://mesh.cortalis.com)
+    The eCortex server URL (e.g., https://ecortex.cortalis.com)
     Injected from NinjaOne custom field or script variable
     
 .PARAMETER MeshInviteToken

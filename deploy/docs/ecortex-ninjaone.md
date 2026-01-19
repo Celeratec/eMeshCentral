@@ -87,7 +87,7 @@ Label: eCortex Server URL
 Type: Text
 Scope: Organization
 Technician Permission: Read Only
-Default Value: https://mesh.cortalis.com
+Default Value: https://ecortex.cortalis.com
 ```
 
 **meshcentral_invite_token**
@@ -132,7 +132,7 @@ In eCortex:
 
 Extract the token portion:
 ```
-https://mesh.cortalis.com/?installcli=4&meshinstall=XXXXXX
+https://ecortex.cortalis.com/?installcli=4&meshinstall=XXXXXX
                                                   ^^^^^^
                                             This is the token
 ```
@@ -142,7 +142,7 @@ https://mesh.cortalis.com/?installcli=4&meshinstall=XXXXXX
 1. Open the client organization in NinjaOne
 2. Go to **Details** → **Custom Fields**
 3. Set values:
-   - `meshcentral_server_url`: `https://mesh.cortalis.com`
+   - `meshcentral_server_url`: `https://ecortex.cortalis.com`
    - `meshcentral_invite_token`: (paste token from Step 1)
    - `meshcentral_group_id`: (group ID from eCortex)
    - `client_code`: `ACME` (short code for client)
@@ -214,7 +214,7 @@ Use eCortex as a **backup** when:
 
 ### Connecting via eCortex Directly
 
-1. Open `https://mesh.cortalis.com`
+1. Open `https://ecortex.cortalis.com`
 2. Log in with credentials + MFA
 3. Search for device: `CLIENTCODE-HOSTNAME`
 4. Click device → Select session type (Desktop/Terminal/Files)
@@ -332,7 +332,7 @@ When decommissioning a single device:
 **Solution:**
 ```powershell
 # Manual test on endpoint
-$env:MESHCENTRAL_SERVER_URL = "https://mesh.cortalis.com"
+$env:MESHCENTRAL_SERVER_URL = "https://ecortex.cortalis.com"
 $env:MESHCENTRAL_INVITE_TOKEN = "your-token-here"
 .\Install-MeshAgent-Windows.ps1 -Verbose
 ```

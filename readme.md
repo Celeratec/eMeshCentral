@@ -44,7 +44,7 @@ docker compose up -d
 
 ### Access eCortex
 
-Open: `https://mesh.cortalis.com`
+Open: `https://ecortex.cortalis.com`
 
 See [deploy/docs/ecortex-deploy.md](deploy/docs/ecortex-deploy.md) for complete deployment instructions.
 

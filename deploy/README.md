@@ -41,7 +41,7 @@ deploy/
 ### Prerequisites
 - Ubuntu 22.04 LTS server
 - Docker & Docker Compose V2
-- DNS pointing `mesh.cortalis.com` to server IP
+- DNS pointing `ecortex.cortalis.com` to server IP
 - Ports 80 and 443 open
 
 ### Deploy
@@ -67,7 +67,7 @@ docker compose logs -f
 
 ### Post-Deployment
 
-1. Access `https://mesh.cortalis.com`
+1. Access `https://ecortex.cortalis.com`
 2. Create admin account (first user)
 3. **Enable MFA immediately**
 4. Create device groups per client
