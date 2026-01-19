@@ -58,6 +58,8 @@ jobs:
 
   # =============================================================================
   # Custom Pattern Checks for eCortex
+  # Note: Excludes upstream MeshCentral sample/example files (sample-config*.json,
+  # docker/compose.yaml) which contain placeholder credentials for documentation.
   # =============================================================================
   custom-checks:
     name: eCortex Secret Patterns
@@ -81,7 +83,14 @@ jobs:
         run: |
           echo "Checking for MongoDB credentials..."
           # Look for mongodb:// with non-placeholder credentials
-          MONGO_CREDS=$(grep -rn "mongodb://[^P][^L]" --include="*.json" --include="*.js" --include="*.yml" --include="*.yaml" . | grep -v "PLACEHOLDER" | grep -v "template" | grep -v "example" | grep -v ".github" || true)
+          # Exclude: templates, examples, samples, upstream docker/, and .github/
+          MONGO_CREDS=$(grep -rn "mongodb://[^P][^L]" --include="*.json" --include="*.js" --include="*.yml" --include="*.yaml" . \
+            | grep -v "PLACEHOLDER" \
+            | grep -v "template" \
+            | grep -v "example" \
+            | grep -v "sample-" \
+            | grep -v "./docker/" \
+            | grep -v ".github" || true)
           if [ -n "$MONGO_CREDS" ]; then
             echo "❌ ERROR: Found potential MongoDB credentials:"
             echo "$MONGO_CREDS"
@@ -92,7 +101,12 @@ jobs:
       - name: Check for hardcoded session keys
         run: |
           echo "Checking for session keys..."
-          SESSION_KEYS=$(grep -rn "sessionKey.*[=:][\"'][A-Za-z0-9_-]\{20,\}" --include="*.json" --include="*.js" . | grep -v "PLACEHOLDER" | grep -v "template" | grep -v "example" || true)
+          # Exclude: templates, examples, samples, and upstream sample-config files
+          SESSION_KEYS=$(grep -rn "sessionKey.*[=:][\"'][A-Za-z0-9_-]\{20,\}" --include="*.json" --include="*.js" . \
+            | grep -v "PLACEHOLDER" \
+            | grep -v "template" \
+            | grep -v "example" \
+            | grep -v "sample-" || true)
           if [ -n "$SESSION_KEYS" ]; then
             echo "❌ ERROR: Found potential session keys:"
             echo "$SESSION_KEYS"
