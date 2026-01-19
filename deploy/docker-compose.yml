@@ -123,14 +123,16 @@ services:
       - meshcentral-network
     labels:
       - "traefik.enable=true"
-      # HTTPS Router for main web interface
+      # HTTP router (required for ACME HTTP-01 challenge)
+      - "traefik.http.routers.meshcentral-http.rule=Host(`${MESHCENTRAL_HOSTNAME}`)"
+      - "traefik.http.routers.meshcentral-http.entrypoints=web"
+      # HTTPS router (main web interface)
       - "traefik.http.routers.meshcentral.rule=Host(`${MESHCENTRAL_HOSTNAME}`)"
       - "traefik.http.routers.meshcentral.entrypoints=websecure"
       - "traefik.http.routers.meshcentral.tls.certresolver=letsencrypt"
       - "traefik.http.routers.meshcentral.middlewares=security-headers,ratelimit"
       - "traefik.http.services.meshcentral.loadbalancer.server.port=443"
       - "traefik.http.services.meshcentral.loadbalancer.server.scheme=https"
-      # WebSocket support
       - "traefik.http.routers.meshcentral.service=meshcentral"
       - "traefik.http.services.meshcentral.loadbalancer.passHostHeader=true"
     healthcheck:
