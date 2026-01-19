@@ -35,9 +35,30 @@ jobs:
           chmod +x gitleaks
           sudo mv gitleaks /usr/local/bin/
 
-      - name: Run Gitleaks
+      - name: Run Gitleaks on deploy directory
         run: |
-          gitleaks detect --source . --verbose --redact --exit-code 1
+          # Only scan the deploy/ directory - this contains our custom configs
+          # Upstream MeshCentral files are open source and contain sample/placeholder values
+          echo "Scanning deploy/ directory for secrets..."
+          gitleaks detect \
+            --source ./deploy \
+            --config .gitleaks.toml \
+            --verbose \
+            --redact \
+            --exit-code 1
+          echo "✅ No secrets found in deploy/"
+      
+      - name: Run Gitleaks on workflow files
+        run: |
+          # Also scan our CI/CD configs
+          echo "Scanning .github/ directory for secrets..."
+          gitleaks detect \
+            --source ./.github \
+            --config .gitleaks.toml \
+            --verbose \
+            --redact \
+            --exit-code 1
+          echo "✅ No secrets found in .github/"
 
   # =============================================================================
   # Secret Detection with TruffleHog

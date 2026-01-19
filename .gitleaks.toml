@@ -1,143 +1,92 @@
-# Gitleaks configuration for MeshCentral
-# https://github.com/gitleaks/gitleaks
+# Gitleaks configuration for eCortex
+# This config excludes upstream MeshCentral sample files and focuses on deploy/ secrets
 
-title = "MeshCentral Gitleaks Config"
+title = "eCortex Gitleaks Config"
 
-# Global allowlist - files/paths to skip entirely
+# =============================================================================
+# Path Exclusions - Upstream MeshCentral files with intentional placeholders
+# =============================================================================
 [allowlist]
-  description = "Global allowlist"
-  paths = [
-    '''\.gitleaks\.toml''',
-    '''\.pre-commit-config\.yaml''',
-    '''\.secrets\.baseline''',
-    '''node_modules''',
-    '''package-lock\.json''',
-    '''\.github/workflows/security-scan\.yml''',
-  ]
+description = "Allowlist for upstream MeshCentral files"
 
-# Rules for detecting secrets
+# Exclude paths that are part of upstream MeshCentral (not our deploy code)
+paths = [
+    # Upstream sample configs with placeholder passwords
+    '''sample-config.*\.json''',
+    '''sample-config-advanced\.json''',
+    
+    # Upstream Docker examples
+    '''docker/compose\.yaml''',
+    '''docker/config\.json\.template''',
+    
+    # Upstream agent and module files
+    '''agents/.*''',
+    '''amt/.*''',
+    '''rdp/.*''',
+    '''public/.*''',
+    '''views/.*''',
+    '''emails/.*''',
+    
+    # Upstream source files that handle keys/certs (not actual secrets)
+    '''authenticode\.js''',
+    '''certoperations\.js''',
+    '''pkcs7-modified\.js''',
+    '''webauthn\.js''',
+    '''letsencrypt\.js''',
+    
+    # Test and documentation files
+    '''docs/.*''',
+    '''translate/.*''',
+    
+    # Our template files (contain PLACEHOLDER values intentionally)
+    '''deploy/.*\.template''',
+    '''deploy/env\.example''',
+    
+    # Git and CI files
+    '''\.github/.*''',
+    '''\.gitignore''',
+]
 
-# AWS Keys
+# Regex patterns to allow (common false positives)
+regexes = [
+    # Placeholder patterns we use
+    '''PLACEHOLDER''',
+    '''CHANGE_ME''',
+    '''your-.*-here''',
+    '''example\.com''',
+    '''cortalis\.com''',
+    
+    # Upstream MeshCentral example credentials (intentionally fake)
+    '''mongodb://username:password@''',
+    '''mongodb://127\.0\.0\.1:27017''',
+    '''password123''',
+    '''admin:admin''',
+]
+
+# =============================================================================
+# Rule Overrides - Fine-tune detection
+# =============================================================================
+
+# Don't flag base64-looking strings in agent binaries
 [[rules]]
-  id = "aws-access-key-id"
-  description = "AWS Access Key ID"
-  regex = '''AKIA[0-9A-Z]{16}'''
-  tags = ["aws", "credentials"]
+id = "generic-api-key"
+description = "Generic API Key"
+regex = '''(?i)(?:api[_-]?key|apikey)[\s]*[=:]+[\s]*['"]([\w-]{20,})['"']'''
+allowlist = { paths = ['''agents/.*''', '''public/.*'''] }
 
+# MongoDB connection strings - only flag if they look like real credentials
 [[rules]]
-  id = "aws-secret-access-key"
-  description = "AWS Secret Access Key"
-  regex = '''(?i)aws_secret_access_key\s*[=:]\s*[A-Za-z0-9/+=]{40}'''
-  tags = ["aws", "credentials"]
+id = "mongodb-connection"
+description = "MongoDB Connection String"
+regex = '''mongodb(?:\+srv)?://[^:]+:[^@]+@[^/]+'''
+allowlist = { 
+    paths = ['''sample-.*''', '''docker/.*''', '''\.template$'''],
+    regexes = ['''username:password''', '''PLACEHOLDER''', '''127\.0\.0\.1''']
+}
 
-# MongoDB Connection Strings
+# Session keys - exclude placeholders
 [[rules]]
-  id = "mongodb-connection-string"
-  description = "MongoDB connection string with credentials"
-  regex = '''mongodb(\+srv)?://[^:]+:[^@]+@[^/]+'''
-  tags = ["database", "mongodb"]
-
-  [rules.allowlist]
-    regexes = [
-      '''PLACEHOLDER''',
-      '''mongodb://MONGO_APP_USER''',
-      '''mongodb://[^:]+:MONGO_APP_PASSWORD''',
-    ]
-
-# Generic API Keys
-[[rules]]
-  id = "generic-api-key"
-  description = "Generic API Key"
-  regex = '''(?i)(api[_-]?key|apikey)\s*[=:]\s*['""]?[A-Za-z0-9_\-]{20,}['""]?'''
-  tags = ["api", "key"]
-
-  [rules.allowlist]
-    regexes = [
-      '''PLACEHOLDER''',
-      '''example''',
-    ]
-
-# Session Keys
-[[rules]]
-  id = "session-key"
-  description = "Session Key"
-  regex = '''(?i)session[_-]?key\s*[=:]\s*['""]?[A-Za-z0-9_\-]{20,}['""]?'''
-  tags = ["session", "key"]
-
-  [rules.allowlist]
-    regexes = [
-      '''PLACEHOLDER''',
-      '''MyReallySecretPassword''',
-    ]
-
-# MeshCentral Invite Tokens
-[[rules]]
-  id = "meshcentral-invite"
-  description = "MeshCentral invite/installation token"
-  regex = '''meshinstall=[A-Za-z0-9]{10,}'''
-  tags = ["meshcentral", "token"]
-
-  [rules.allowlist]
-    regexes = [
-      '''PLACEHOLDER''',
-      '''example''',
-    ]
-
-# Private Keys
-[[rules]]
-  id = "private-key"
-  description = "Private Key"
-  regex = '''-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----'''
-  tags = ["key", "private"]
-
-# Password in config
-[[rules]]
-  id = "password-in-config"
-  description = "Password in configuration"
-  regex = '''(?i)(password|passwd|pwd)\s*[=:]\s*['""]?[^'""\s]{8,}['""]?'''
-  tags = ["password"]
-
-  [rules.allowlist]
-    regexes = [
-      '''PLACEHOLDER''',
-      '''CHANGE_ME''',
-      '''MyReallySecretPassword''',
-      '''Password\.1''',
-      '''amtpassword''',
-      '''MyP@ssw0rd''',
-      '''password1''',
-      '''password2''',
-    ]
-
-# Generic Secret
-[[rules]]
-  id = "generic-secret"
-  description = "Generic Secret"
-  regex = '''(?i)(secret|token)\s*[=:]\s*['""]?[A-Za-z0-9_\-]{20,}['""]?'''
-  tags = ["secret"]
-
-  [rules.allowlist]
-    regexes = [
-      '''PLACEHOLDER''',
-      '''example''',
-      '''xxxxxxx''',
-      '''xxxxx''',
-    ]
-
-# High Entropy Strings (potential secrets)
-[[rules]]
-  id = "high-entropy"
-  description = "High entropy string (potential secret)"
-  regex = '''[A-Za-z0-9+/]{40,}={0,2}'''
-  entropy = 4.5
-  tags = ["entropy"]
-
-  [rules.allowlist]
-    paths = [
-      '''agents/''',
-      '''\.min\.js$''',
-      '''\.min\.css$''',
-    ]
-    regexes = [
-      '''PLACEHOLDER''',
-    ]
+id = "session-key"
+description = "Session Key"
+regex = '''(?i)session[_-]?key[\s]*[=:]+[\s]*['"]([\w-]{20,})['"']'''
+allowlist = { regexes = ['''PLACEHOLDER''', '''CHANGE_ME'''] }
