@@ -1,23 +1,23 @@
-# MeshCentral Deployment - DFW MSP Backup Remote Access
+# eCortex Deployment - Cortalis Backup Remote Access
 
-Production deployment files for MeshCentral as a backup remote access system, deployed and managed via NinjaOne.
+Production deployment files for eCortex as a backup remote access system, deployed and managed via NinjaOne.
 
 ## 📋 Overview
 
-MeshCentral serves as a **secondary, technician-initiated fallback** when:
+eCortex serves as a **secondary, technician-initiated fallback** when:
 - NinjaRemote fails
 - RDP is blocked
 - RustDesk is unavailable
 - Browser-only emergency access is required
 
-**MeshCentral does NOT replace NinjaOne** - NinjaOne remains the system of record.
+**eCortex does NOT replace NinjaOne** - NinjaOne remains the system of record.
 
 ## 📁 Directory Structure
 
 ```
 deploy/
 ├── docker-compose.yml          # Production container orchestration
-├── config.json                 # MeshCentral server configuration
+├── config.json                 # eCortex server configuration
 ├── env.example                 # Environment variables template
 ├── setup.sh                    # Automated setup script
 ├── init-mongo.js               # MongoDB initialization
@@ -25,15 +25,15 @@ deploy/
 │   ├── jail.local              # Fail2ban configuration
 │   └── filter.d/
 │       ├── traefik-auth.conf   # Auth failure detection
-│       └── meshcentral-auth.conf
+│       └── ecortex-auth.conf
 ├── ninjaone-scripts/
 │   ├── Install-MeshAgent-Windows.ps1   # Windows agent deployment
 │   ├── Install-MeshAgent-macOS.sh      # macOS agent deployment
 │   ├── Validate-MeshAgent.ps1          # Health check script
 │   └── Uninstall-MeshAgent.ps1         # Agent removal
 └── docs/
-    ├── meshcentral-deploy.md   # Server deployment guide
-    └── ninja-meshcentral.md    # NinjaOne integration guide
+    ├── ecortex-deploy.md       # Server deployment guide
+    └── ecortex-ninjaone.md     # NinjaOne integration guide
 ```
 
 ## 🚀 Quick Start
@@ -48,8 +48,8 @@ deploy/
 
 ```bash
 # Clone repository
-git clone https://github.com/dfwmsp/eMeshCentral.git
-cd eMeshCentral/deploy
+git clone https://github.com/Celeratec/eCortex.git
+cd eCortex/deploy
 
 # Run setup (generates secrets)
 chmod +x setup.sh
@@ -79,7 +79,7 @@ docker compose logs -f
 |---------|---------------|
 | TLS | Traefik + Let's Encrypt |
 | MFA | Mandatory (`force2factor: true`) |
-| Rate Limiting | Traefik + MeshCentral |
+| Rate Limiting | Traefik + eCortex |
 | Brute Force Protection | Fail2ban |
 | Audit Logging | `authLog` enabled |
 | Session Timeout | 30 min idle |
@@ -97,8 +97,8 @@ All sensitive values are:
 
 | Document | Purpose |
 |----------|---------|
-| [docs/meshcentral-deploy.md](docs/meshcentral-deploy.md) | Server deployment & administration |
-| [docs/ninja-meshcentral.md](docs/ninja-meshcentral.md) | NinjaOne integration & workflows |
+| [docs/ecortex-deploy.md](docs/ecortex-deploy.md) | Server deployment & administration |
+| [docs/ecortex-ninjaone.md](docs/ecortex-ninjaone.md) | NinjaOne integration & workflows |
 
 ## 🔄 Token Rotation
 
@@ -119,6 +119,5 @@ Agent deployment tokens should be rotated:
 ## 📞 Support
 
 For issues with this deployment:
-1. Check [troubleshooting docs](docs/meshcentral-deploy.md#troubleshooting)
+1. Check [troubleshooting docs](docs/ecortex-deploy.md#troubleshooting)
 2. Review container logs: `docker compose logs`
-3. Check [MeshCentral official docs](https://meshcentral.com/docs/)

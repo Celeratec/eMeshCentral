@@ -2,7 +2,7 @@
 
 ## Cortalis Backup Remote Access System
 
-This guide covers deploying eCortex (based on MeshCentral) as a self-hosted backup remote access solution for Cortalis technicians.
+This guide covers deploying eCortex as a self-hosted backup remote access solution for Cortalis technicians.
 
 ---
 
@@ -51,7 +51,7 @@ Technician (Browser/Client)
 
         ⇅ Outbound TLS
 
-   [MeshAgent on Endpoints]
+   [eCortex Agent on Endpoints]
 ```
 
 ### Key Principles
@@ -116,8 +116,8 @@ docker compose version
 
 ```bash
 # Clone the repository
-git clone https://github.com/dfwmsp/eMeshCentral.git
-cd eMeshCentral/deploy
+git clone https://github.com/Celeratec/eCortex.git
+cd eCortex/deploy
 
 # Or download just the deploy folder
 ```
@@ -144,7 +144,7 @@ sudo nano .env
 
 ```ini
 # Your domain (must match DNS)
-MESHCENTRAL_HOSTNAME=mesh.dfwmsp.com
+MESHCENTRAL_HOSTNAME=mesh.cortalis.com
 
 # Email for Let's Encrypt
 ACME_EMAIL=admin@dfwmsp.com
@@ -217,7 +217,7 @@ Verify in `config.json`:
 | TLS Enabled | ✅ | Via Traefik + Let's Encrypt |
 | MFA Enforced | ✅ | `force2factor: true` |
 | No Anonymous Access | ✅ | `NewAccounts: false` |
-| Rate Limiting | ✅ | Traefik + MeshCentral config |
+| Rate Limiting | ✅ | Traefik + eCortex config |
 | Session Timeout | ✅ | 30 min idle timeout |
 | Audit Logging | ✅ | `authLog` configured |
 | Fail2ban | ✅ | Container included |
@@ -443,7 +443,7 @@ docker compose ps
 # Check Traefik logs
 docker compose logs traefik
 
-# Check MeshCentral logs
+# Check eCortex logs
 docker compose logs meshcentral
 
 # Verify DNS resolution
@@ -484,16 +484,14 @@ docker compose restart traefik
 | Component | Log Location |
 |-----------|--------------|
 | Traefik | `docker compose logs traefik` |
-| MeshCentral | `docker compose logs meshcentral` |
+| eCortex | `docker compose logs meshcentral` |
 | MongoDB | `docker compose logs mongodb` |
 | Fail2ban | `docker compose logs fail2ban` |
 | Auth Log | `/opt/meshcentral/meshcentral-data/auth.log` |
 
 ### Support Resources
 
-- [MeshCentral Documentation](https://meshcentral.com/docs/)
-- [MeshCentral GitHub](https://github.com/Ylianst/MeshCentral)
-- [Community Discord](https://discord.gg/meshcentral)
+- [Upstream Documentation](https://meshcentral.com/docs/) (technical reference)
 
 ---
 
@@ -523,7 +521,7 @@ docker compose restart traefik
 
 ## Definition of Done
 
-MeshCentral is production-ready when:
+eCortex is production-ready when:
 
 - [x] Server survives restart without data loss
 - [x] Agents reconnect automatically

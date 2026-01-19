@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/Ylianst/MeshCentral/master/meshcentral-config-schema.json",
-  "_comment": "DFW MSP MeshCentral Production Configuration Template",
+  "_comment": "eCortex Production Configuration Template",
   "_instructions": "Copy to config.json and replace placeholders with actual values from .env",
   "settings": {
     "cert": "MESHCENTRAL_HOSTNAME_PLACEHOLDER",
@@ -44,8 +44,8 @@
   },
   "domains": {
     "": {
-      "title": "DFW MSP Remote Access",
-      "title2": "Backup System",
+      "title": "eCortex",
+      "title2": "Cortalis Remote Access",
       "minify": true,
       "NewAccounts": false,
       "localSessionRecording": true,
@@ -67,7 +67,7 @@
       },
       "twoFactorCookieDurationDays": 7,
       "consentMessages": {
-        "title": "DFW MSP Remote Support",
+        "title": "eCortex Remote Support",
         "desktop": "{0} is starting a remote desktop session.",
         "terminal": "{0} is starting a remote terminal session.",
         "files": "{0} is starting a remote file access session.",
@@ -76,7 +76,7 @@
         "autoAcceptIfNoUser": true
       },
       "notificationMessages": {
-        "title": "DFW MSP Remote Support",
+        "title": "eCortex Remote Support",
         "desktop": "{0} started a remote desktop session.",
         "terminal": "{0} started a remote terminal session.",
         "files": "{0} started a remote files session."
@@ -87,10 +87,10 @@
         "scp": true
       },
       "agentCustomization": {
-        "displayName": "DFW MSP Remote Agent",
-        "description": "DFW MSP backup remote access agent for IT support.",
-        "companyName": "DFW MSP",
-        "serviceName": "dfwmspagent"
+        "displayName": "eCortex Agent",
+        "description": "eCortex backup remote access agent by Cortalis.",
+        "companyName": "Cortalis",
+        "serviceName": "ecortexagent"
       },
       "limits": {
         "maxSingleUserSessions": 5

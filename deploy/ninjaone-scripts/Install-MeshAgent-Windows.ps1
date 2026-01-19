@@ -1,20 +1,20 @@
 <#
 .SYNOPSIS
-    MeshCentral Agent Installation Script for NinjaOne Deployment
+    eCortex Agent Installation Script for NinjaOne Deployment
     
 .DESCRIPTION
-    Silent installation of MeshAgent on Windows endpoints.
+    Silent installation of eCortex Agent on Windows endpoints.
     Designed for deployment via NinjaOne with secure variable injection.
     
     NO SECRETS ARE HARDCODED - All sensitive values come from NinjaOne variables.
     
 .NOTES
-    Author: DFW MSP
+    Author: Cortalis
     Version: 1.0.0
     Deployment: NinjaOne Policy/Script
     
 .PARAMETER MeshServerUrl
-    The MeshCentral server URL (e.g., https://mesh.dfwmsp.com)
+    The eCortex server URL (e.g., https://mesh.cortalis.com)
     Injected from NinjaOne custom field or script variable
     
 .PARAMETER MeshInviteToken
@@ -107,21 +107,21 @@ function Write-Log {
     }
 }
 
-Write-Log "MeshCentral Agent Installation Script Starting"
+Write-Log "eCortex Agent Installation Script Starting"
 Write-Log "Server URL: $MeshServerUrl"
 Write-Log "Client Code: $ClientCode"
 Write-Log "Group ID: $(if ($MeshGroupId) { $MeshGroupId.Substring(0, [Math]::Min(10, $MeshGroupId.Length)) + '...' } else { 'Not Set' })"
 
 # Validate required parameters
 if (-not $MeshServerUrl) {
-    Write-Log "ERROR: MeshCentral server URL not configured" "ERROR"
+    Write-Log "ERROR: eCortex server URL not configured" "ERROR"
     Write-Log "Set the 'meshcentral_server_url' custom field in NinjaOne" "ERROR"
     exit 1
 }
 
 if (-not $MeshInviteToken) {
-    Write-Log "ERROR: MeshCentral invite token not configured" "ERROR"
-    Write-Log "Generate a token in MeshCentral and set 'meshcentral_invite_token' in NinjaOne" "ERROR"
+    Write-Log "ERROR: eCortex invite token not configured" "ERROR"
+    Write-Log "Generate a token in eCortex and set 'meshcentral_invite_token' in NinjaOne" "ERROR"
     exit 1
 }
 
@@ -145,9 +145,9 @@ if ($existingService -and $existingService.Status -eq "Running") {
 }
 
 # Check for custom service name (if using agentCustomization)
-$customService = Get-Service -Name "dfwmspagent" -ErrorAction SilentlyContinue
+$customService = Get-Service -Name "ecortexagent" -ErrorAction SilentlyContinue
 if ($customService -and $customService.Status -eq "Running") {
-    Write-Log "DFW MSP Agent service is already installed and running"
+    Write-Log "eCortex Agent service is already installed and running"
     exit 0
 }
 
@@ -166,7 +166,7 @@ if (Test-Path $tempDir) {
 New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
 
 # Construct download URL with invite token
-# MeshCentral generates a unique URL for each device group with embedded settings
+# eCortex generates a unique URL for each device group with embedded settings
 $downloadUrl = "$MeshServerUrl/meshagents?id=4"
 
 # Add invite code if provided (for automatic device registration)
@@ -182,7 +182,7 @@ try {
     
     # Download the agent
     $webClient = New-Object System.Net.WebClient
-    $webClient.Headers.Add("User-Agent", "NinjaOne-MeshCentral-Installer/1.0")
+    $webClient.Headers.Add("User-Agent", "NinjaOne-eCortex-Installer/1.0")
     
     # If we have a direct MSH link (installation string), use that
     if ($MeshInviteToken -match "^meshcentral://") {
@@ -297,16 +297,16 @@ if ($service) {
 }
 
 # =============================================================================
-# STORE MESHCENTRAL URL IN NINJAONE (for quick access)
+# STORE ECORTEX URL IN NINJAONE (for quick access)
 # =============================================================================
 try {
     # Calculate the device URL for NinjaOne custom field
-    # This allows technicians to click directly to the device in MeshCentral
+    # This allows technicians to click directly to the device in eCortex
     $meshDeviceUrl = "$MeshServerUrl/?node=$hostname"
     
     # Store in NinjaOne custom field (if the field exists)
     Ninja-Property-Set meshcentral_device_url $meshDeviceUrl 2>$null
-    Write-Log "MeshCentral device URL stored in NinjaOne custom field"
+    Write-Log "eCortex device URL stored in NinjaOne custom field"
 }
 catch {
     Write-Log "Could not store device URL in NinjaOne (non-critical): $_" "WARN"
@@ -330,7 +330,7 @@ catch {
 # SUCCESS
 # =============================================================================
 Write-Log "=========================================="
-Write-Log "MeshCentral Agent Installation Complete!"
+Write-Log "eCortex Agent Installation Complete!"
 Write-Log "=========================================="
 Write-Log "Server: $MeshServerUrl"
 Write-Log "Device: $deviceName"

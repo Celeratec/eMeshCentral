@@ -1,8 +1,8 @@
-# NinjaOne + MeshCentral Integration Guide
+# NinjaOne + eCortex Integration Guide
 
-## DFW MSP Backup Remote Access System
+## Cortalis Backup Remote Access System
 
-This guide covers integrating MeshCentral with NinjaOne for automated agent deployment and technician access.
+This guide covers integrating eCortex with NinjaOne for automated agent deployment and technician access.
 
 ---
 
@@ -33,7 +33,7 @@ This guide covers integrating MeshCentral with NinjaOne for automated agent depl
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                       MeshCentral                                │
+│                         eCortex                                  │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
 │  │ Device Group │  │  MeshAgent   │  │   Remote Session     │  │
 │  │ (Per Client) │──│ (On Endpoint)│──│  (Desktop/Terminal)  │  │
@@ -60,7 +60,7 @@ Create these custom fields in NinjaOne Admin:
 
 | Field Name | Type | Purpose |
 |------------|------|---------|
-| `meshcentral_server_url` | Text | MeshCentral server URL |
+| `meshcentral_server_url` | Text | eCortex server URL |
 | `meshcentral_invite_token` | Secure | Agent installation token |
 | `meshcentral_group_id` | Text | Device group ID |
 | `client_code` | Text | Short client identifier |
@@ -69,7 +69,7 @@ Create these custom fields in NinjaOne Admin:
 
 | Field Name | Type | Purpose |
 |------------|------|---------|
-| `meshcentral_device_url` | Text/URL | Direct link to device in MeshCentral |
+| `meshcentral_device_url` | Text/URL | Direct link to device in eCortex |
 | `meshcentral_agent_status` | Text | Agent health status |
 | `meshcentral_agent_version` | Text | Installed agent version |
 | `meshcentral_last_check` | Date/Time | Last validation check |
@@ -83,17 +83,17 @@ Create these custom fields in NinjaOne Admin:
 **meshcentral_server_url**
 ```
 Name: meshcentral_server_url
-Label: MeshCentral Server URL
+Label: eCortex Server URL
 Type: Text
 Scope: Organization
 Technician Permission: Read Only
-Default Value: https://mesh.dfwmsp.com
+Default Value: https://mesh.cortalis.com
 ```
 
 **meshcentral_invite_token**
 ```
 Name: meshcentral_invite_token  
-Label: MeshCentral Invite Token
+Label: eCortex Invite Token
 Type: Secure Text
 Scope: Organization
 Technician Permission: None (Hidden)
@@ -111,7 +111,7 @@ Technician Permission: Read Only
 **meshcentral_device_url**
 ```
 Name: meshcentral_device_url
-Label: MeshCentral Device Link
+Label: eCortex Device Link
 Type: URL
 Scope: Device
 Technician Permission: Read Only
@@ -123,7 +123,7 @@ Technician Permission: Read Only
 
 ### Step 1: Generate Installation Token
 
-In MeshCentral:
+In eCortex:
 
 1. Navigate to target device group
 2. Click **Add Agent** → **Invite Link**
@@ -132,7 +132,7 @@ In MeshCentral:
 
 Extract the token portion:
 ```
-https://mesh.dfwmsp.com/?installcli=4&meshinstall=XXXXXX
+https://mesh.cortalis.com/?installcli=4&meshinstall=XXXXXX
                                                   ^^^^^^
                                             This is the token
 ```
@@ -142,9 +142,9 @@ https://mesh.dfwmsp.com/?installcli=4&meshinstall=XXXXXX
 1. Open the client organization in NinjaOne
 2. Go to **Details** → **Custom Fields**
 3. Set values:
-   - `meshcentral_server_url`: `https://mesh.dfwmsp.com`
+   - `meshcentral_server_url`: `https://mesh.cortalis.com`
    - `meshcentral_invite_token`: (paste token from Step 1)
-   - `meshcentral_group_id`: (group ID from MeshCentral)
+   - `meshcentral_group_id`: (group ID from eCortex)
    - `client_code`: `ACME` (short code for client)
 
 ### Step 3: Deploy Scripts to NinjaOne
@@ -193,9 +193,9 @@ Timeout: 300 seconds
 
 ## Technician Workflow
 
-### When to Use MeshCentral
+### When to Use eCortex
 
-Use MeshCentral as a **backup** when:
+Use eCortex as a **backup** when:
 
 1. ❌ NinjaRemote fails to connect
 2. ❌ RDP is blocked by firewall/policy
@@ -207,14 +207,14 @@ Use MeshCentral as a **backup** when:
 **Preferred Method:**
 
 1. Open device in NinjaOne
-2. Look for **MeshCentral Device Link** custom field
-3. Click the link to open MeshCentral directly to that device
-4. Authenticate with MeshCentral credentials + MFA
+2. Look for **eCortex Device Link** custom field
+3. Click the link to open eCortex directly to that device
+4. Authenticate with eCortex credentials + MFA
 5. Start remote session
 
-### Connecting via MeshCentral Directly
+### Connecting via eCortex Directly
 
-1. Open `https://mesh.dfwmsp.com`
+1. Open `https://mesh.cortalis.com`
 2. Log in with credentials + MFA
 3. Search for device: `CLIENTCODE-HOSTNAME`
 4. Click device → Select session type (Desktop/Terminal/Files)
@@ -231,11 +231,11 @@ Use MeshCentral as a **backup** when:
 
 ### Best Practices for Technicians
 
-1. **Always try NinjaRemote first** - MeshCentral is backup only
-2. **Log your sessions** - Document in ticket when using MeshCentral
+1. **Always try NinjaRemote first** - eCortex is backup only
+2. **Log your sessions** - Document in ticket when using eCortex
 3. **Use named sessions** - Add reason when starting session
 4. **Close sessions properly** - Don't leave sessions open
-5. **Report issues** - If MeshCentral doesn't work, report to admin
+5. **Report issues** - If eCortex doesn't work, report to admin
 
 ---
 
@@ -279,12 +279,12 @@ Action: Create ticket / Alert
 
 When removing a client from service:
 
-#### Step 1: Remove from MeshCentral
+#### Step 1: Remove from eCortex
 
-1. Log in to MeshCentral as admin
+1. Log in to eCortex as admin
 2. Navigate to client's device group
 3. Select all devices
-4. Click **Delete** (removes from MeshCentral inventory)
+4. Click **Delete** (removes from eCortex inventory)
 5. Delete the device group
 
 #### Step 2: Uninstall Agents via NinjaOne
@@ -302,7 +302,7 @@ When removing a client from service:
 
 #### Step 4: Remove User Access
 
-1. In MeshCentral, remove technician access to device group
+1. In eCortex, remove technician access to device group
 2. Or delete group entirely
 
 ### Device Offboarding
@@ -310,7 +310,7 @@ When removing a client from service:
 When decommissioning a single device:
 
 1. Run `Uninstall-MeshAgent.ps1` on device
-2. In MeshCentral, delete the device record
+2. In eCortex, delete the device record
 3. Clear NinjaOne `meshcentral_device_url` field
 
 ---
@@ -320,24 +320,24 @@ When decommissioning a single device:
 ### Agent Not Installing
 
 **Symptoms:**
-- Script runs but agent doesn't appear in MeshCentral
+- Script runs but agent doesn't appear in eCortex
 - Service not created
 
 **Checks:**
 1. Verify custom fields are set in NinjaOne organization
 2. Check token hasn't expired
-3. Verify network connectivity to MeshCentral server
+3. Verify network connectivity to eCortex server
 4. Review script output in NinjaOne activity log
 
 **Solution:**
 ```powershell
 # Manual test on endpoint
-$env:MESHCENTRAL_SERVER_URL = "https://mesh.dfwmsp.com"
+$env:MESHCENTRAL_SERVER_URL = "https://mesh.cortalis.com"
 $env:MESHCENTRAL_INVITE_TOKEN = "your-token-here"
 .\Install-MeshAgent-Windows.ps1 -Verbose
 ```
 
-### Agent Shows Offline in MeshCentral
+### Agent Shows Offline in eCortex
 
 **Symptoms:**
 - Agent installed but shows offline
@@ -365,7 +365,7 @@ Restart-Service MeshAgent
 - New devices not registering
 
 **Solution:**
-1. Generate new token in MeshCentral
+1. Generate new token in eCortex
 2. Update NinjaOne organization's `meshcentral_invite_token`
 3. Re-run deployment on affected devices
 
@@ -421,4 +421,4 @@ INITECH-LAPTOP42
 
 1. **Level 1**: Check agent status, restart service
 2. **Level 2**: Re-deploy agent, check network
-3. **Level 3**: Contact MeshCentral admin for server issues
+3. **Level 3**: Contact eCortex admin for server issues

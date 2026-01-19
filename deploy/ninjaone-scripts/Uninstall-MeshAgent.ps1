@@ -1,13 +1,13 @@
 <#
 .SYNOPSIS
-    MeshCentral Agent Uninstallation Script for NinjaOne
+    eCortex Agent Uninstallation Script for NinjaOne
     
 .DESCRIPTION
-    Silent removal of MeshAgent from Windows endpoints.
+    Silent removal of eCortex Agent from Windows endpoints.
     Used for offboarding clients or cleanup.
     
 .NOTES
-    Author: DFW MSP
+    Author: Cortalis
     Version: 1.0.0
     Deployment: NinjaOne Script
 #>
@@ -25,7 +25,7 @@ function Write-Log {
     Write-Host "[$timestamp] [$Level] $Message"
 }
 
-Write-Log "MeshCentral Agent Uninstallation Script Starting"
+Write-Log "eCortex Agent Uninstallation Script Starting"
 Write-Log "Hostname: $env:COMPUTERNAME"
 
 # =============================================================================
@@ -166,7 +166,7 @@ if ($remainingService -or $remainingProcess) {
 # SUCCESS
 # =============================================================================
 Write-Log "=========================================="
-Write-Log "MeshCentral Agent Uninstallation Complete"
+Write-Log "eCortex Agent Uninstallation Complete"
 Write-Log "=========================================="
 
 exit 0

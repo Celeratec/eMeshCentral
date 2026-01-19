@@ -1,9 +1,9 @@
 #!/bin/bash
 # =============================================================================
-# MeshCentral Production Setup Script
-# DFW MSP Backup Remote Access System
+# eCortex Production Setup Script
+# Cortalis Backup Remote Access System
 # =============================================================================
-# This script prepares the environment for MeshCentral deployment
+# This script prepares the environment for eCortex deployment
 # Run with: sudo ./setup.sh
 # =============================================================================
 
@@ -62,7 +62,7 @@ if [[ ! -f .env ]]; then
     MONGO_ROOT_PASS=$(openssl rand -base64 32 | tr -d '/+=' | cut -c1-32)
     MONGO_APP_PASS=$(openssl rand -base64 32 | tr -d '/+=' | cut -c1-32)
     
-    # Generate MeshCentral keys
+    # Generate eCortex keys
     SESSION_KEY=$(openssl rand -base64 64 | tr -d '/+=' | cut -c1-64)
     DB_ENCRYPT_KEY=$(openssl rand -base64 32 | tr -d '/+=' | cut -c1-32)
     
@@ -194,7 +194,7 @@ echo ""
 echo "4. Check logs:"
 echo "   docker compose logs -f"
 echo ""
-echo "5. Access MeshCentral at:"
+echo "5. Access eCortex at:"
 echo "   https://${MESHCENTRAL_HOSTNAME}"
 echo ""
 echo "6. First user to register becomes admin"

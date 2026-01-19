@@ -1,4 +1,4 @@
-// MongoDB initialization script template for MeshCentral
+// MongoDB initialization script template for eCortex
 // Copy to init-mongo.js and replace placeholders (done automatically by setup.sh)
 
 db = db.getSiblingDB('meshcentral');
@@ -14,4 +14,4 @@ db.createUser({
     ]
 });
 
-print('MeshCentral database user created successfully');
+print('eCortex database user created successfully');

@@ -1,4 +1,4 @@
-# MeshCentral Production Deployment - DFW MSP Backup Remote Access
+# eCortex Production Deployment - Cortalis Backup Remote Access
 # This deployment uses Traefik as reverse proxy with Let's Encrypt TLS
 # All data persists in named volumes - survives container restarts
 #
@@ -70,7 +70,7 @@ services:
       retries: 3
 
   # =============================================================================
-  # MONGODB - Database for MeshCentral
+  # MONGODB - Database for eCortex
   # =============================================================================
   mongodb:
     image: mongo:7
@@ -96,7 +96,7 @@ services:
       - "27017"
 
   # =============================================================================
-  # MESHCENTRAL - Main Application
+  # ECORTEX - Main Application
   # =============================================================================
   meshcentral:
     image: ghcr.io/ylianst/meshcentral:latest
@@ -184,7 +184,7 @@ volumes:
     name: meshcentral-mongodb-data
   mongodb-config:
     name: meshcentral-mongodb-config
-  # MeshCentral
+  # eCortex Data
   meshcentral-data:
     name: meshcentral-data
   meshcentral-files:

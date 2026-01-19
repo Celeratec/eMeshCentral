@@ -1,13 +1,13 @@
 #!/bin/bash
 # =============================================================================
-# MeshCentral Agent Installation Script for NinjaOne Deployment (macOS)
+# eCortex Agent Installation Script for NinjaOne Deployment (macOS)
 # =============================================================================
-# Silent installation of MeshAgent on macOS endpoints.
+# Silent installation of eCortex Agent on macOS endpoints.
 # Designed for deployment via NinjaOne with secure variable injection.
 #
 # NO SECRETS ARE HARDCODED - All sensitive values come from NinjaOne variables.
 #
-# Author: DFW MSP
+# Author: Cortalis
 # Version: 1.0.0
 # Deployment: NinjaOne Policy/Script
 # =============================================================================
@@ -54,7 +54,7 @@ fi
 # =============================================================================
 
 log_info "=========================================="
-log_info "MeshCentral Agent Installation (macOS)"
+log_info "eCortex Agent Installation (macOS)"
 log_info "=========================================="
 
 # Check if running as root
@@ -72,14 +72,14 @@ log_info "Client Code: $CLIENT_CODE"
 log_info "Group ID: ${MESH_GROUP_ID:0:10}..."
 
 if [ -z "$MESH_SERVER_URL" ]; then
-    log_error "MeshCentral server URL not configured"
+    log_error "eCortex server URL not configured"
     log_error "Set the 'meshcentral_server_url' custom field in NinjaOne"
     exit 1
 fi
 
 if [ -z "$MESH_INVITE_TOKEN" ]; then
-    log_error "MeshCentral invite token not configured"
-    log_error "Generate a token in MeshCentral and set 'meshcentral_invite_token' in NinjaOne"
+    log_error "eCortex invite token not configured"
+    log_error "Generate a token in eCortex and set 'meshcentral_invite_token' in NinjaOne"
     exit 1
 fi
 
@@ -108,8 +108,8 @@ if [ -f "$MESH_AGENT_PATH" ] && [ -f "$MESH_AGENT_PLIST" ]; then
 fi
 
 # Check for custom service name
-if launchctl list | grep -q "dfwmspagent"; then
-    log_info "DFW MSP Agent is already installed and running"
+if launchctl list | grep -q "ecortexagent"; then
+    log_info "eCortex Agent is already installed and running"
     exit 0
 fi
 
@@ -254,19 +254,19 @@ else
 fi
 
 # =============================================================================
-# STORE MESHCENTRAL URL IN NINJAONE (for quick access)
+# STORE ECORTEX URL IN NINJAONE (for quick access)
 # =============================================================================
 if command -v ninja-property-set &> /dev/null; then
     MESH_DEVICE_URL="${MESH_SERVER_URL}/?node=${HOSTNAME}"
     ninja-property-set meshcentral_device_url "$MESH_DEVICE_URL" 2>/dev/null || true
-    log_info "MeshCentral device URL stored in NinjaOne custom field"
+    log_info "eCortex device URL stored in NinjaOne custom field"
 fi
 
 # =============================================================================
 # SUCCESS
 # =============================================================================
 log_info "=========================================="
-log_info "MeshCentral Agent Installation Complete!"
+log_info "eCortex Agent Installation Complete!"
 log_info "=========================================="
 log_info "Server: $MESH_SERVER_URL"
 log_info "Device: $DEVICE_NAME"

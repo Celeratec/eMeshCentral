@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    MeshCentral Agent Status Validation Script for NinjaOne
+    eCortex Agent Status Validation Script for NinjaOne
     
 .DESCRIPTION
-    Validates MeshAgent installation status and connectivity.
+    Validates eCortex Agent installation status and connectivity.
     Outputs status to NinjaOne console and updates custom fields.
     
     Use this script for:
@@ -12,7 +12,7 @@
     - Compliance reporting
     
 .NOTES
-    Author: DFW MSP
+    Author: Cortalis
     Version: 1.0.0
     Deployment: NinjaOne Monitoring Policy
 #>
@@ -38,7 +38,7 @@ $status = @{
 }
 
 Write-Host "=========================================="
-Write-Host "MeshCentral Agent Status Check"
+Write-Host "eCortex Agent Status Check"
 Write-Host "=========================================="
 Write-Host "Hostname: $env:COMPUTERNAME"
 Write-Host "Timestamp: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
@@ -50,7 +50,7 @@ Write-Host "=========================================="
 Write-Host ""
 Write-Host "Checking MeshAgent service..."
 
-$serviceNames = @("MeshAgent", "dfwmspagent", "meshagent")
+$serviceNames = @("MeshAgent", "ecortexagent", "meshagent")
 $service = $null
 
 foreach ($name in $serviceNames) {

@@ -1,16 +1,16 @@
 # Technician Quick Start Guide
 
-## MeshCentral Backup Remote Access
+## eCortex Backup Remote Access
 
-Quick reference for DFW MSP technicians using MeshCentral as a backup remote access tool.
+Quick reference for Cortalis technicians using eCortex as a backup remote access tool.
 
 ---
 
-## ⚠️ When to Use MeshCentral
+## ⚠️ When to Use eCortex
 
-MeshCentral is a **BACKUP** tool. Use it only when:
+eCortex is a **BACKUP** tool. Use it only when:
 
-| ❌ This Fails | ✅ Use MeshCentral |
+| ❌ This Fails | ✅ Use eCortex |
 |---------------|-------------------|
 | NinjaRemote | ✅ |
 | RDP (blocked) | ✅ |
@@ -23,7 +23,7 @@ MeshCentral is a **BACKUP** tool. Use it only when:
 
 ## 🔑 Logging In
 
-1. Go to: `https://mesh.dfwmsp.com`
+1. Go to: `https://mesh.cortalis.com`
 2. Enter your credentials
 3. Complete MFA (required)
 
@@ -36,10 +36,10 @@ MeshCentral is a **BACKUP** tool. Use it only when:
 ### Method 1: From NinjaOne (Preferred)
 
 1. Open device in NinjaOne
-2. Find **MeshCentral Device Link** in custom fields
+2. Find **eCortex Device Link** in custom fields
 3. Click the link → Opens directly to device
 
-### Method 2: Search in MeshCentral
+### Method 2: Search in eCortex
 
 1. Use search bar at top
 2. Search format: `CLIENTCODE-HOSTNAME`
@@ -87,10 +87,10 @@ MeshCentral is a **BACKUP** tool. Use it only when:
 
 ## 📋 Session Best Practices
 
-1. **Document usage** - Note in ticket when using MeshCentral
+1. **Document usage** - Note in ticket when using eCortex
 2. **Add session reason** - When prompted
 3. **Close properly** - Don't leave sessions open
-4. **Report issues** - If MeshCentral fails, inform admin
+4. **Report issues** - If eCortex fails, inform admin
 
 ---
 
@@ -129,8 +129,8 @@ MeshCentral is a **BACKUP** tool. Use it only when:
 
 ## 📱 Mobile Access
 
-MeshCentral works in mobile browsers:
-1. Navigate to `https://mesh.dfwmsp.com`
+eCortex works in mobile browsers:
+1. Navigate to `https://mesh.cortalis.com`
 2. Log in with credentials + MFA
 3. Search for device
 4. Touch-friendly interface available
@@ -139,7 +139,7 @@ MeshCentral works in mobile browsers:
 
 ## ✅ Quick Checklist
 
-Before starting a MeshCentral session:
+Before starting an eCortex session:
 
 - [ ] NinjaRemote tried first?
 - [ ] Device online in NinjaOne?

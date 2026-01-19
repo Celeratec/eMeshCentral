@@ -1,4 +1,4 @@
-# Fail2ban configuration for MeshCentral
+# Fail2ban configuration for eCortex
 # Protects against brute force login attempts
 
 [DEFAULT]
@@ -25,11 +25,11 @@ findtime = 10m
 bantime = 30m
 
 # =============================================================================
-# MESHCENTRAL SPECIFIC
+# ECORTEX SPECIFIC
 # =============================================================================
-[meshcentral-auth]
+[ecortex-auth]
 enabled = true
-filter = meshcentral-auth
+filter = ecortex-auth
 logpath = /var/log/traefik/access.log
 maxretry = 5
 findtime = 10m
