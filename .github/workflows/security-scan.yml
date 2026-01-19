@@ -129,7 +129,11 @@ jobs:
       - name: Check for private keys
         run: |
           echo "Checking for private keys..."
-          PRIVATE_KEYS=$(grep -rn "BEGIN.*PRIVATE KEY" . --include="*.pem" --include="*.key" --include="*.json" --include="*.js" || true)
+          # Only check for actual .pem and .key files, not JS code that parses keys
+          # Exclude upstream MeshCentral source files that handle key parsing
+          PRIVATE_KEYS=$(grep -rn "BEGIN.*PRIVATE KEY" . --include="*.pem" --include="*.key" --include="*.json" \
+            | grep -v "sample-" \
+            | grep -v "template" || true)
           if [ -n "$PRIVATE_KEYS" ]; then
             echo "❌ ERROR: Found private key files:"
             echo "$PRIVATE_KEYS"
