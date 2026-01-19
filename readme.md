@@ -16,6 +16,7 @@ eCortex is Cortalis's customized deployment of MeshCentral, providing a self-hos
 - ⌨️ **Remote terminal** - Command line access to endpoints
 - 🔐 **No hardcoded secrets** - All credentials generated at deployment
 - 🚀 **NinjaOne integration** - Deploy agents via existing RMM policies
+- ⚡ **Auto-deploy to AWS** - Push to main triggers automatic deployment
 
 ### When to Use eCortex
 
@@ -32,7 +33,30 @@ eCortex is Cortalis's customized deployment of MeshCentral, providing a self-hos
 
 ## Quick Start
 
-### Deploy the Server
+### Option A: Auto-Deploy to AWS (Recommended)
+
+**1. Prepare your EC2 instance:**
+```bash
+# SSH into fresh Ubuntu 22.04 EC2 instance
+curl -sSL https://raw.githubusercontent.com/Celeratec/eCortex/main/deploy/scripts/server-setup.sh | sudo bash
+```
+
+**2. Configure GitHub Secrets:**
+| Secret | Value |
+|--------|-------|
+| `AWS_EC2_HOST` | Your EC2 IP |
+| `AWS_EC2_USER` | `ubuntu` |
+| `AWS_EC2_SSH_KEY` | Private SSH key |
+| `DEPLOY_PATH` | `/opt/ecortex` |
+
+**3. Push to deploy:**
+```bash
+git push origin main  # Triggers automatic deployment
+```
+
+See [AWS Deployment Guide](deploy/docs/aws-deployment.md) for details.
+
+### Option B: Manual Deploy
 
 ```bash
 git clone https://github.com/Celeratec/eCortex.git
@@ -54,6 +78,7 @@ See [deploy/docs/ecortex-deploy.md](deploy/docs/ecortex-deploy.md) for complete 
 
 | Document | Description |
 |----------|-------------|
+| [AWS Deployment Guide](deploy/docs/aws-deployment.md) | **Auto-deployment to AWS EC2** |
 | [Server Deployment Guide](deploy/docs/ecortex-deploy.md) | Installing and configuring the eCortex server |
 | [NinjaOne Integration](deploy/docs/ecortex-ninjaone.md) | Deploying agents via NinjaOne policies |
 | [Technician Quick Start](deploy/docs/technician-quickstart.md) | How technicians use eCortex |
@@ -102,9 +127,14 @@ Technician (Browser)
 
 ```
 eCortex/
+├── .github/
+│   └── workflows/
+│       ├── deploy.yml       # Auto-deploy to AWS on push
+│       └── security-scan.yml # Secret detection
 ├── deploy/                  # Production deployment files
 │   ├── docker-compose.yml   # Container orchestration
 │   ├── setup.sh             # Automated setup
+│   ├── scripts/             # Server setup scripts
 │   ├── ninjaone-scripts/    # Agent deployment scripts
 │   └── docs/                # Deployment documentation
 ├── agents/                  # Agent binaries and scripts

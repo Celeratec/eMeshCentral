@@ -1,0 +1,339 @@
+# =============================================================================
+# eCortex Auto-Deployment to AWS
+# =============================================================================
+# Automatically deploys to production when changes are pushed to main branch
+#
+# Required GitHub Secrets:
+#   AWS_EC2_HOST        - EC2 public IP or hostname
+#   AWS_EC2_USER        - SSH user (usually 'ubuntu' or 'ec2-user')
+#   AWS_EC2_SSH_KEY     - Private SSH key for EC2 access
+#   DEPLOY_PATH         - Path to eCortex on server (e.g., /opt/ecortex)
+#
+# Optional Secrets:
+#   SLACK_WEBHOOK_URL   - For deployment notifications
+#   DISCORD_WEBHOOK_URL - For deployment notifications
+# =============================================================================
+
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      # Only deploy when these files change
+      - 'deploy/**'
+      - '.github/workflows/deploy.yml'
+  
+  # Allow manual deployment
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+# Prevent concurrent deployments
+concurrency:
+  group: deployment-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/opt/ecortex' }}
+
+jobs:
+  # =============================================================================
+  # Pre-deployment checks
+  # =============================================================================
+  pre-deploy:
+    name: Pre-deployment Checks
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate deployment files
+        id: check
+        run: |
+          echo "Checking deployment files..."
+          
+          # Check required files exist
+          REQUIRED_FILES=(
+            "deploy/docker-compose.yml"
+            "deploy/config.json.template"
+            "deploy/env.example"
+            "deploy/setup.sh"
+          )
+          
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Missing required file: $file"
+              exit 1
+            fi
+            echo "✅ Found: $file"
+          done
+          
+          # Validate docker-compose syntax
+          docker compose -f deploy/docker-compose.yml config --quiet
+          echo "✅ docker-compose.yml is valid"
+          
+          echo "should_deploy=true" >> $GITHUB_OUTPUT
+
+      - name: Check for secrets
+        run: |
+          echo "Verifying no secrets in deployment files..."
+          
+          # Quick scan for obvious secrets
+          if grep -r "CHANGE_ME\|YOUR_PASSWORD\|REPLACE_ME" deploy/*.json 2>/dev/null | grep -v template | grep -v example; then
+            echo "❌ Found placeholder secrets that weren't replaced"
+            exit 1
+          fi
+          
+          echo "✅ No obvious secrets found"
+
+  # =============================================================================
+  # Deploy to AWS EC2
+  # =============================================================================
+  deploy:
+    name: Deploy to AWS
+    runs-on: ubuntu-latest
+    needs: pre-deploy
+    if: needs.pre-deploy.outputs.should_deploy == 'true'
+    environment: 
+      name: ${{ github.event.inputs.environment || 'production' }}
+      url: https://${{ secrets.ECORTEX_HOSTNAME || 'ecortex.cortalis.com' }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_EC2_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Add host to known_hosts to prevent prompt
+          ssh-keyscan -H ${{ secrets.AWS_EC2_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Test SSH Connection
+        run: |
+          echo "Testing SSH connection to ${{ secrets.AWS_EC2_HOST }}..."
+          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 \
+            ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} \
+            "echo 'SSH connection successful'"
+
+      - name: Create deployment package
+        run: |
+          echo "Creating deployment package..."
+          
+          # Create tarball of deploy directory
+          tar -czvf deploy-package.tar.gz \
+            --exclude='*.example' \
+            --exclude='.env' \
+            --exclude='config.json' \
+            --exclude='init-mongo.js' \
+            deploy/
+          
+          echo "Package created: $(ls -lh deploy-package.tar.gz)"
+
+      - name: Upload deployment package
+        run: |
+          echo "Uploading to ${{ secrets.AWS_EC2_HOST }}..."
+          
+          scp -i ~/.ssh/deploy_key \
+            deploy-package.tar.gz \
+            ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }}:/tmp/
+
+      - name: Execute deployment
+        id: deploy
+        run: |
+          echo "Executing deployment..."
+          
+          ssh -i ~/.ssh/deploy_key \
+            ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} << 'DEPLOY_SCRIPT'
+          
+          set -e
+          
+          DEPLOY_PATH="${{ env.DEPLOY_PATH }}"
+          BACKUP_PATH="${DEPLOY_PATH}/backups/deploy-$(date +%Y%m%d-%H%M%S)"
+          
+          echo "=========================================="
+          echo "eCortex Deployment - $(date)"
+          echo "=========================================="
+          
+          # Create backup of current deployment
+          if [ -d "$DEPLOY_PATH/deploy" ]; then
+            echo "📦 Creating backup..."
+            mkdir -p "$BACKUP_PATH"
+            cp -r "$DEPLOY_PATH/deploy" "$BACKUP_PATH/" 2>/dev/null || true
+            # Keep only last 5 backups
+            ls -dt "$DEPLOY_PATH/backups/deploy-"* 2>/dev/null | tail -n +6 | xargs rm -rf 2>/dev/null || true
+          fi
+          
+          # Extract new deployment
+          echo "📥 Extracting deployment package..."
+          cd "$DEPLOY_PATH"
+          tar -xzf /tmp/deploy-package.tar.gz --strip-components=0
+          rm /tmp/deploy-package.tar.gz
+          
+          # Preserve existing secrets (.env, config.json, init-mongo.js)
+          echo "🔐 Preserving secrets..."
+          if [ -f "$BACKUP_PATH/deploy/.env" ]; then
+            cp "$BACKUP_PATH/deploy/.env" "$DEPLOY_PATH/deploy/.env"
+          fi
+          if [ -f "$BACKUP_PATH/deploy/config.json" ]; then
+            cp "$BACKUP_PATH/deploy/config.json" "$DEPLOY_PATH/deploy/config.json"
+          fi
+          if [ -f "$BACKUP_PATH/deploy/init-mongo.js" ]; then
+            cp "$BACKUP_PATH/deploy/init-mongo.js" "$DEPLOY_PATH/deploy/init-mongo.js"
+          fi
+          
+          # Change to deploy directory
+          cd "$DEPLOY_PATH/deploy"
+          
+          # Pull latest images
+          echo "🐳 Pulling latest Docker images..."
+          docker compose pull
+          
+          # Restart services with zero-downtime strategy
+          echo "🔄 Restarting services..."
+          docker compose up -d --remove-orphans
+          
+          # Wait for services to be healthy
+          echo "⏳ Waiting for services to be healthy..."
+          sleep 10
+          
+          # Health check
+          echo "🏥 Running health checks..."
+          HEALTHY=true
+          
+          # Check each container
+          for container in meshcentral-traefik meshcentral-mongodb meshcentral-server; do
+            STATUS=$(docker inspect --format='{{.State.Status}}' "$container" 2>/dev/null || echo "not_found")
+            if [ "$STATUS" = "running" ]; then
+              echo "  ✅ $container: running"
+            else
+              echo "  ❌ $container: $STATUS"
+              HEALTHY=false
+            fi
+          done
+          
+          if [ "$HEALTHY" = "false" ]; then
+            echo "❌ Deployment health check failed!"
+            echo "Rolling back..."
+            if [ -d "$BACKUP_PATH/deploy" ]; then
+              cp -r "$BACKUP_PATH/deploy/"* "$DEPLOY_PATH/deploy/"
+              docker compose up -d
+            fi
+            exit 1
+          fi
+          
+          echo ""
+          echo "=========================================="
+          echo "✅ Deployment completed successfully!"
+          echo "=========================================="
+          docker compose ps
+          
+          DEPLOY_SCRIPT
+
+      - name: Verify deployment
+        run: |
+          echo "Verifying deployment..."
+          
+          # Wait for services to fully initialize
+          sleep 15
+          
+          # Test HTTPS endpoint
+          HOSTNAME="${{ secrets.ECORTEX_HOSTNAME || 'ecortex.cortalis.com' }}"
+          
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 30 \
+            "https://${HOSTNAME}/" || echo "000")
+          
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "302" ]; then
+            echo "✅ eCortex is responding (HTTP $HTTP_CODE)"
+          else
+            echo "⚠️ eCortex returned HTTP $HTTP_CODE (may still be starting)"
+          fi
+
+      - name: Cleanup SSH key
+        if: always()
+        run: |
+          rm -f ~/.ssh/deploy_key
+
+  # =============================================================================
+  # Notify on completion
+  # =============================================================================
+  notify:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [pre-deploy, deploy]
+    if: always()
+    steps:
+      - name: Determine status
+        id: status
+        run: |
+          if [ "${{ needs.deploy.result }}" = "success" ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "emoji=✅" >> $GITHUB_OUTPUT
+            echo "message=eCortex deployed successfully" >> $GITHUB_OUTPUT
+          elif [ "${{ needs.deploy.result }}" = "skipped" ]; then
+            echo "status=skipped" >> $GITHUB_OUTPUT
+            echo "emoji=⏭️" >> $GITHUB_OUTPUT
+            echo "message=Deployment skipped" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "emoji=❌" >> $GITHUB_OUTPUT
+            echo "message=eCortex deployment failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Slack notification
+        if: env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-type: application/json' \
+            -d '{
+              "text": "${{ steps.status.outputs.emoji }} ${{ steps.status.outputs.message }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "${{ steps.status.outputs.emoji }} *${{ steps.status.outputs.message }}*\n\n*Branch:* `${{ github.ref_name }}`\n*Commit:* `${{ github.sha }}`\n*Actor:* ${{ github.actor }}"
+                  }
+                }
+              ]
+            }'
+
+      - name: Discord notification
+        if: env.DISCORD_WEBHOOK_URL != ''
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -X POST "$DISCORD_WEBHOOK_URL" \
+            -H 'Content-type: application/json' \
+            -d '{
+              "content": "${{ steps.status.outputs.emoji }} **${{ steps.status.outputs.message }}**\n\n**Branch:** `${{ github.ref_name }}`\n**Commit:** `${{ github.sha }}`\n**Actor:** ${{ github.actor }}"
+            }'
+
+      - name: Summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ steps.status.outputs.emoji }} ${{ steps.status.outputs.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Actor | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Time | $(date -u) |" >> $GITHUB_STEP_SUMMARY

@@ -17,15 +17,17 @@ eCortex serves as a **secondary, technician-initiated fallback** when:
 ```
 deploy/
 ├── docker-compose.yml          # Production container orchestration
-├── config.json                 # eCortex server configuration
+├── config.json.template        # eCortex server config template
 ├── env.example                 # Environment variables template
 ├── setup.sh                    # Automated setup script
-├── init-mongo.js               # MongoDB initialization
+├── init-mongo.js.template      # MongoDB initialization template
 ├── fail2ban/
 │   ├── jail.local              # Fail2ban configuration
 │   └── filter.d/
 │       ├── traefik-auth.conf   # Auth failure detection
 │       └── ecortex-auth.conf
+├── scripts/
+│   └── server-setup.sh         # AWS EC2 initial setup script
 ├── ninjaone-scripts/
 │   ├── Install-MeshAgent-Windows.ps1   # Windows agent deployment
 │   ├── Install-MeshAgent-macOS.sh      # macOS agent deployment
@@ -33,7 +35,8 @@ deploy/
 │   └── Uninstall-MeshAgent.ps1         # Agent removal
 └── docs/
     ├── ecortex-deploy.md       # Server deployment guide
-    └── ecortex-ninjaone.md     # NinjaOne integration guide
+    ├── ecortex-ninjaone.md     # NinjaOne integration guide
+    └── aws-deployment.md       # AWS auto-deployment guide
 ```
 
 ## 🚀 Quick Start
@@ -44,7 +47,27 @@ deploy/
 - DNS pointing `ecortex.cortalis.com` to server IP
 - Ports 80 and 443 open
 
-### Deploy
+### Option A: Auto-Deploy to AWS (Recommended)
+
+Push to `main` branch triggers automatic deployment via GitHub Actions.
+
+**One-time AWS setup:**
+```bash
+# SSH into fresh Ubuntu 22.04 EC2 instance
+curl -sSL https://raw.githubusercontent.com/Celeratec/eCortex/main/deploy/scripts/server-setup.sh | sudo bash
+```
+
+**Configure GitHub Secrets:**
+| Secret | Value |
+|--------|-------|
+| `AWS_EC2_HOST` | Your EC2 IP |
+| `AWS_EC2_USER` | `ubuntu` or `ecortex` |
+| `AWS_EC2_SSH_KEY` | Private SSH key |
+| `DEPLOY_PATH` | `/opt/ecortex` |
+
+See [AWS Deployment Guide](docs/aws-deployment.md) for details.
+
+### Option B: Manual Deploy
 
 ```bash
 # Clone repository
@@ -97,6 +120,7 @@ All sensitive values are:
 
 | Document | Purpose |
 |----------|---------|
+| [docs/aws-deployment.md](docs/aws-deployment.md) | **AWS auto-deployment setup** |
 | [docs/ecortex-deploy.md](docs/ecortex-deploy.md) | Server deployment & administration |
 | [docs/ecortex-ninjaone.md](docs/ecortex-ninjaone.md) | NinjaOne integration & workflows |
 
@@ -115,6 +139,7 @@ Agent deployment tokens should be rotated:
 - [x] NinjaOne can deploy agents silently
 - [x] Technicians can reach endpoints when NinjaRemote fails
 - [x] No secrets in public repositories
+- [x] **Auto-deploy on push to main branch**
 
 ## 📞 Support
 
