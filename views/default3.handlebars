@@ -65,6 +65,10 @@
 
 <body id="body" oncontextmenu="handleContextMenu(event)" style="display:none;min-width:495px"
     onload="if (typeof(startup) !== 'undefined') startup();">
+    <!-- Heroicons SVG Sprite -->
+    <div style="display:none">
+        <object id="heroicons-sprite" data="images/heroicons.svg" type="image/svg+xml"></object>
+    </div>
     <!-- right click menu -->
     <div id="contextMenu" class="contextMenu noselect" style="display:none">
         <div id="cxinfo" class="cmtext" onclick="cmaction(1,event)"><b>Information</b></div>
@@ -155,7 +159,7 @@
                     title="Click to view current notifications"
                     onclick="clickNotificationIcon()"
                     style="display: none;">
-                    <i class="fa-solid fa-bell fa-xl text-white"></i>
+                    <svg class="hero-icon hero-icon-xl text-white"><use href="images/heroicons.svg#icon-bell"></use></svg>
                     <span id="notificationBadge"
                         class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger">0</span>
                 </div>
@@ -165,87 +169,83 @@
                         <div id="userDropdownButton">
                             <img id="userDropdownImage" src="images/user-256.png" alt="User" />
                             <span id="userDropdownName" class="LogoffLinkColor"></span>
-                            <i class="fa fa-chevron-down LogoffLinkColor" style="font-size: 12px;"></i>
+                            <svg class="hero-icon LogoffLinkColor" style="width:12px;height:12px"><use href="images/heroicons.svg#icon-chevron-down"></use></svg>
                         </div>
                         <div id="userDropdownMenu">
                             <div id="userDropdownMenuContainer">
                                 <div class="userDropdownMenuItem userDropdownMobileOnly mobile-menu-item" data-action="devices" onclick="handleUserMenuItem('devices')">
-                                    <i class="fa fa-desktop userDropdownMenuIcon"></i>
+                                    <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-computer-desktop"></use></svg>
                                     <span>My Devices</span>
                                 </div>
 
                                 <div class="userDropdownMenuItem userDropdownMobileOnly mobile-menu-item" data-action="events" onclick="handleUserMenuItem('events')">
-                                    <i class="fa fa-calendar userDropdownMenuIcon"></i>
+                                    <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-calendar"></use></svg>
                                     <span>My Events</span>
                                 </div>
 
                                 <div id="mobileUsersMenuItem" class="userDropdownMenuItem userDropdownMobileOnly users-menu-item mobile-menu-item d-none" data-action="users" onclick="handleUserMenuItem('users')">
-                                    <i class="fa fa-users userDropdownMenuIcon"></i>
+                                    <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-users"></use></svg>
                                     <span>My Users</span>
                                 </div>
 
                                 <div id="mobileFilesMenuItem" class="userDropdownMenuItem userDropdownMobileOnly files-menu-item mobile-menu-item d-none" data-action="files" onclick="handleUserMenuItem('files')">
-                                    <i class="fa fa-folder userDropdownMenuIcon"></i>
+                                    <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-folder"></use></svg>
                                     <span>My Files</span>
                                 </div>
 
                                 <div id="mobileServerMenuItem" class="userDropdownMenuItem userDropdownMobileOnly server-menu-item mobile-menu-item d-none" data-action="server" onclick="handleUserMenuItem('server')">
-                                    <i class="fa fa-server userDropdownMenuIcon"></i>
+                                    <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-server-stack"></use></svg>
                                     <span>My Server</span>
                                 </div>
 
                                 <div id="userDropdownMenuDivider" class="userDropdownMobileOnly mobile-menu-item"></div>
 
                                 <div class="userDropdownMenuItem userDropdownUISettings" onclick="toggleUISubmenu(); event.stopPropagation();">
-                                    <i class="fa fa-sliders userDropdownMenuIcon"></i>
+                                    <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-adjustments"></use></svg>
                                     <span>UI Settings</span>
-                                    <i class="fa fa-chevron-right userDropdownMenuIcon submenu-arrow"></i>
+                                    <svg class="hero-icon userDropdownMenuIcon submenu-arrow" style="width:14px;height:14px"><use href="images/heroicons.svg#icon-chevron-right"></use></svg>
                                 </div>
 
                                 <div id="uiSubmenu" class="userDropdownSubmenu">
-                                    <div id="toggleModernUIMenuItem" class="userDropdownMenuItem" data-action="toggle-modern-ui" onclick="handleUserMenuItem('toggle-modern-ui')">
-                                        <i class="fa fa-toggle-on userDropdownMenuIcon"></i>
-                                        <span>Toggle Modern UI</span>
-                                    </div>
                                     <div class="userDropdownMenuItem" data-action="left-bar" onclick="handleUserMenuItem('left-bar')">
-                                        <i class="fa fa-window-maximize fa-rotate-270 userDropdownMenuIcon"></i>
+                                        <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-window"></use></svg>
                                         <span>Left Bar Interface</span>
                                     </div>
                                     <div class="userDropdownMenuItem" data-action="top-bar" onclick="handleUserMenuItem('top-bar')">
-                                        <i class="fa fa-window-maximize userDropdownMenuIcon"></i>
+                                        <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-window"></use></svg>
                                         <span>Top Bar Interface</span>
                                     </div>
                                     <div class="userDropdownMenuItem" data-action="fixed-width" onclick="handleUserMenuItem('fixed-width')">
-                                        <i class="fa fa-columns userDropdownMenuIcon"></i>
+                                        <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-grid"></use></svg>
                                         <span>Fixed Width Interface</span>
                                     </div>
                                     <div id="toggleFooterMenuItem" class="userDropdownMenuItem" data-action="toggle-footer" onclick="handleUserMenuItem('toggle-footer')">
-                                        <i class="fa fa-window-minimize userDropdownMenuIcon"></i>
+                                        <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-minus"></use></svg>
                                         <span>Toggle Footer Bar</span>
                                     </div>
                                     <div id="userDropdownMenuDivider" class="userDropdownMobileOnly"></div>
                                 </div>
 
                                 <div id="toggleNightMenuItem" class="userDropdownMenuItem" data-action="toggle-night" onclick="toggleNightMode(); QV('userDropdownMenu', false); QV('uiSubmenu', false); resetChevronArrow();">
-                                    <i id="nightModeIcon" class="fa userDropdownMenuIcon night-mode-icon"></i>
+                                    <svg id="nightModeIcon" class="hero-icon userDropdownMenuIcon night-mode-icon"><use href="images/heroicons.svg#icon-moon"></use></svg>
                                     <span id="nightModeText">Toggle night mode</span>
                                 </div>
 
 
                                 <div class="userDropdownMenuItem" data-action="notes" onclick="handleUserMenuItem('notes')">
-                                    <i class="fa fa-sticky-note userDropdownMenuIcon"></i>
+                                    <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-document-text"></use></svg>
                                     <span>Personal Notes</span>
                                 </div>
 
                                 <div class="userDropdownMenuItem" data-action="account" onclick="handleUserMenuItem('account')">
-                                    <i class="fa fa-user userDropdownMenuIcon"></i>
+                                    <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-user"></use></svg>
                                     <span>My Account</span>
                                 </div>
 
                                 <div id="userDropdownMenuDivider"></div>
 
                                 <div class="userDropdownMenuItem" data-action="logout" onclick="handleUserMenuItem('logout')">
-                                    <i class="fa fa-sign-out userDropdownMenuIcon"></i>
+                                    <svg class="hero-icon userDropdownMenuIcon"><use href="images/heroicons.svg#icon-logout"></use></svg>
                                     <span>Logout</span>
                                 </div>
                             </div>
@@ -258,12 +258,12 @@
         <div class="sidebar flex-column" id="page_leftbar">
             <div style="height:24px"></div>
             <nav class="nav flex-column">
-                <a class="nav-link active text-center text-white lbbuttonsel" id="LeftMenuMyDevices" href="#" data-target="general" onclick=go(1,event) onkeypress="if (event.key=='Enter') { go(1); }"><i class="fa-solid fa-computer me-2"></i></a>
-                <a class="nav-link text-center text-white" id="LeftMenuMyAccount" href="#" data-target="account" onclick=go(2,event) onkeypress="if (event.key=='Enter') { go(2); }"><i class="fa-solid fa-user-gear me-2"></i></a>
-                <a class="nav-link text-center text-white" id="LeftMenuMyEvents" href="#" data-target="events" onclick=go(3,event) onkeypress="if (event.key=='Enter') { go(3); }"><i class="fa-solid fa-calendar-alt me-2"></i></a>
-                <a class="nav-link text-center text-white" id="LeftMenuMyFiles" href="#" data-target="files" onclick=go(5,event) onkeypress="if (event.key=='Enter') { go(5); }"><i class="fa-solid fa-folder-open me-2"></i></a>
-                <a class="nav-link text-center text-white" id="LeftMenuMyUsers" href="#" data-target="users" onclick=go(4,event) onkeypress="if (event.key=='Enter') { go(4); }"><i class="fa-solid fa-users me-2"></i></a>
-                <a class="nav-link text-center text-white" id="LeftMenuMyServer" href="#" data-target="server" onclick=go(6,event) onkeypress="if (event.key=='Enter') { go(6); }"><i class="fa-solid fa-server me-2"></i></a>
+                <a class="nav-link active text-center text-white lbbuttonsel" id="LeftMenuMyDevices" href="#" data-target="general" onclick=go(1,event) onkeypress="if (event.key=='Enter') { go(1); }" title="My Devices"><svg class="hero-icon hero-icon-lg"><use href="images/heroicons.svg#icon-computer-desktop"></use></svg></a>
+                <a class="nav-link text-center text-white" id="LeftMenuMyAccount" href="#" data-target="account" onclick=go(2,event) onkeypress="if (event.key=='Enter') { go(2); }" title="My Account"><svg class="hero-icon hero-icon-lg"><use href="images/heroicons.svg#icon-user"></use></svg></a>
+                <a class="nav-link text-center text-white" id="LeftMenuMyEvents" href="#" data-target="events" onclick=go(3,event) onkeypress="if (event.key=='Enter') { go(3); }" title="My Events"><svg class="hero-icon hero-icon-lg"><use href="images/heroicons.svg#icon-calendar"></use></svg></a>
+                <a class="nav-link text-center text-white" id="LeftMenuMyFiles" href="#" data-target="files" onclick=go(5,event) onkeypress="if (event.key=='Enter') { go(5); }" title="My Files"><svg class="hero-icon hero-icon-lg"><use href="images/heroicons.svg#icon-folder"></use></svg></a>
+                <a class="nav-link text-center text-white" id="LeftMenuMyUsers" href="#" data-target="users" onclick=go(4,event) onkeypress="if (event.key=='Enter') { go(4); }" title="My Users"><svg class="hero-icon hero-icon-lg"><use href="images/heroicons.svg#icon-users"></use></svg></a>
+                <a class="nav-link text-center text-white" id="LeftMenuMyServer" href="#" data-target="server" onclick=go(6,event) onkeypress="if (event.key=='Enter') { go(6); }" title="My Server"><svg class="hero-icon hero-icon-lg"><use href="images/heroicons.svg#icon-server-stack"></use></svg></a>
             </nav>
         </div>
         <div id=topbar class=noselect>
@@ -2852,31 +2852,6 @@
             }
             mainUpdate(512);
             QV('body', true);
-        }
-
-        function saveUserInterfaceMode() {
-            var nUiViewMode = 3;
-            if (Q('ui0').checked) { nUiViewMode = 2; }
-            if (getstore('uiViewMode', 3) != nUiViewMode) {
-                putstore('uiViewMode', nUiViewMode);
-                // Check if the URL includes 'sitestyle=' and remove it
-                var url = new URL(window.location.href);
-                if (url.searchParams.has('sitestyle')) {
-                    url.searchParams.delete('sitestyle');
-                    window.history.replaceState({}, document.title, url.toString());
-                }
-                reload();
-            }
-        }
-
-        function toggleBootstrapUIMode() {
-            if (xxdialogMode) return;
-            var uiViewMode = getstore('uiViewMode', 3);
-            var x = '<div class=form-check><input type=radio class=form-check-input id=ui0 name=uiradio value=2 ' + ((uiViewMode == 2)?'checked':'') + '><label class=form-check-label for=ui0>' + "Classic" + '</label></div>';
-            x += '<div class=form-check><input type=radio class=form-check-input id=ui1 name=uiradio value=3 ' + ((uiViewMode == 3)?'checked':'') + '><label class=form-check-label for=ui1>' + "Modern" + '</label></div>';
-            setModalContent('xxAddAgent', "User Interface", x);
-            showModal('xxAddAgentModal', 'idx_dlgOkButton', saveUserInterfaceMode);
-            QV('uiMenu', false);
         }
 
         function getNodeFromId(id) { if (nodes != null) { for (var i in nodes) { if (nodes[i]._id == id) return nodes[i]; } } return null; }
@@ -19019,7 +18994,6 @@
                 case 'users': goForward('users'); break;
                 case 'files': goForward('files'); break;
                 case 'server': goForward('server'); break;
-                case 'toggle-modern-ui': toggleBootstrapUIMode(); break;
                 case 'left-bar': userInterfaceSelectMenu(1); break;
                 case 'top-bar': userInterfaceSelectMenu(2); break;
                 case 'fixed-width': userInterfaceSelectMenu(3); break;

@@ -21,9 +21,7 @@ var minify = null;
 var meshCentralSourceFiles = [
     "../views/agentinvite.handlebars",
     "../views/invite.handlebars",
-    "../views/default.handlebars",
     "../views/default3.handlebars",
-    "../views/default-mobile.handlebars",
     "../views/download.handlebars",
     "../views/download2.handlebars",
     "../views/error404.handlebars",
@@ -64,9 +62,7 @@ var meshCentralSourceFiles = [
 var minifyMeshCentralSourceFiles = [
     "../views/agentinvite.handlebars",
     "../views/invite.handlebars",
-    "../views/default.handlebars",
     "../views/default3.handlebars",
-    "../views/default-mobile.handlebars",
     "../views/download.handlebars",
     "../views/download2.handlebars",
     "../views/error404.handlebars",

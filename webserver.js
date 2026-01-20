@@ -3223,16 +3223,8 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                 if (obj.parent.config.settings && obj.parent.config.settings.webrtcconfig && (typeof obj.parent.config.settings.webrtcconfig == 'object')) { webRtcConfig = encodeURIComponent(JSON.stringify(obj.parent.config.settings.webrtcconfig)).replace(/'/g, '%27'); }
                 else if (args.webrtcconfig && (typeof args.webrtcconfig == 'object')) { webRtcConfig = encodeURIComponent(JSON.stringify(args.webrtcconfig)).replace(/'/g, '%27'); }                
 
-                // Load default page style or new modern ui
-                var uiViewMode = 'default';
-                var webstateJSON = JSON.parse(webstate);
-                if (req.query.sitestyle != null) {
-                    if (req.query.sitestyle == 3) { uiViewMode = 'default3'; }
-                } else if (webstateJSON && webstateJSON.uiViewMode == 3) {
-                    uiViewMode = 'default3';
-                } else if (domain.sitestyle == 3) {
-                    uiViewMode = 'default3';
-                }
+                // Use modern UI (classic UI has been removed)
+                var uiViewMode = 'default3';
                 // Refresh the session
                 render(dbGetFunc.req, dbGetFunc.res, getRenderPage(uiViewMode, dbGetFunc.req, domain), getRenderArgs({
                     authCookie: authCookie,
