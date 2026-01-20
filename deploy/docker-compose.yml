@@ -24,8 +24,6 @@ services:
       - "--providers.file.watch=true"
       # Entrypoints
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls=true"
       # Let's Encrypt
@@ -126,21 +124,24 @@ services:
       - meshcentral-network
     labels:
       - "traefik.enable=true"
-      # HTTP router (required for ACME HTTP-01 challenge)
+      # HTTP to HTTPS redirect middleware
+      - "traefik.http.middlewares.meshcentral-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.meshcentral-redirect.redirectscheme.permanent=true"
+      # HTTP router (handles ACME challenge, then redirects to HTTPS)
       - "traefik.http.routers.meshcentral-http.rule=Host(`${MESHCENTRAL_HOSTNAME}`)"
       - "traefik.http.routers.meshcentral-http.entrypoints=web"
+      - "traefik.http.routers.meshcentral-http.middlewares=meshcentral-redirect"
       # HTTPS router (main web interface)
       - "traefik.http.routers.meshcentral.rule=Host(`${MESHCENTRAL_HOSTNAME}`)"
       - "traefik.http.routers.meshcentral.entrypoints=websecure"
       - "traefik.http.routers.meshcentral.tls.certresolver=letsencrypt"
       - "traefik.http.routers.meshcentral.middlewares=security-headers@file"
       - "traefik.http.services.meshcentral.loadbalancer.server.port=443"
-      - "traefik.http.services.meshcentral.loadbalancer.server.scheme=https"
+      - "traefik.http.services.meshcentral.loadbalancer.server.scheme=http"
       - "traefik.http.routers.meshcentral.service=meshcentral"
       - "traefik.http.services.meshcentral.loadbalancer.passHostHeader=true"
-      - "traefik.http.services.meshcentral.loadbalancer.serversTransport=insecure@file"
     healthcheck:
-      test: ["CMD", "curl", "-fk", "https://localhost:443/"]
+      test: ["CMD", "curl", "-f", "http://localhost:443/"]
       interval: 60s
       timeout: 10s
       retries: 3
