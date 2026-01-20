@@ -3,7 +3,7 @@
   "_comment": "eCortex Production Configuration Template",
   "_instructions": "Copy to config.json and replace placeholders with actual values from .env",
   "settings": {
-    "cert": "MESHCENTRAL_HOSTNAME_PLACEHOLDER",
+    "cert": "ecortex.cortalis.com",
     "mongoDb": "mongodb://MONGO_APP_USER_PLACEHOLDER:MONGO_APP_PASSWORD_PLACEHOLDER@mongodb:27017/meshcentral",
     "mongoDbName": "meshcentral",
     "WANonly": true,
@@ -44,7 +44,7 @@
   },
   "domains": {
     "": {
-      "certUrl": "https://MESHCENTRAL_HOSTNAME_PLACEHOLDER",
+      "certUrl": "https://ecortex.cortalis.com",
       "title": "eCortex",
       "title2": "Cortalis Remote Access",
       "minify": true,
